@@ -19,7 +19,8 @@ RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
     zlib1g-dev \
     imagemagick \
     libmagickwand-dev \
-    wget
+    wget \
+    ghostscript
 
 # Install the PHP extensions we need
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
@@ -59,6 +60,6 @@ RUN rm /var/www/html/config/database.ini \
 && chmod 600 /var/www/html/.htaccess
 
 VOLUME /var/www/html/volume/
-
+\
 CMD echo "ServerName localhost" >> /etc/apache2/apache2.conf
 CMD ["apache2-foreground"]
