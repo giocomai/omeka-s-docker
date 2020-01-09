@@ -25,7 +25,7 @@ RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
 # Install the PHP extensions we need
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 RUN docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql mysqli gd
-RUN pecl install mcrypt-1.0.2 && docker-php-ext-enable mcrypt && pecl install imagick && docker-php-ext-enable imagick 
+RUN yes | pecl install  mcrypt-1.0.2 && docker-php-ext-enable mcrypt && yes | pecl install imagick && docker-php-ext-enable imagick 
 
 # Add the Omeka-S PHP code
 # Latest Omeka version, check: https://omeka.org/s/download/
