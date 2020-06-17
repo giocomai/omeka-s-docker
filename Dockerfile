@@ -20,7 +20,8 @@ RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
     imagemagick \
     libmagickwand-dev \
     wget \
-    ghostscript
+    ghostscript \
+    poppler-utils
 
 # Install the PHP extensions we need
 RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ --with-freetype=/usr/include/
