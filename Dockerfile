@@ -36,7 +36,7 @@ RUN unzip -q /var/www/latest_omeka_s.zip -d /var/www/ \
 &&  rm -rf /var/www/html/ \
 &&  mv /var/www/omeka-s/ /var/www/html/
 
-COPY ./imagemagick-policy.xml /etc/ImageMagick/policy.xml
+COPY ./imagemagick-policy.xml /etc/ImageMagick-6/policy.xml
 COPY ./.htaccess /var/www/html/.htaccess
 
 
