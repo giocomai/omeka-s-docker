@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: omeka
+      MYSQL_DATABASE: omeka
+      MYSQL_USER: omeka
+      MYSQL_PASSWORD: omeka
+    volumes:
+      - ./data/db:/var/lib/mysql
+
+  app:
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: .docker/app/Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - OMEKA_DB_HOST
+      - OMEKA_DB_NAME
+      - OMEKA_DB_USER
+      - OMEKA_DB_PASSWORD
+    volumes:
+      - type: bind
+        source: ./modules/
+        target: /var/www/html/modules/
+      - type: bind
+        source: ./themes/custom/
+        target: /var/www/html/themes/custom/
+    restart: always
+
