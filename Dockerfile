@@ -31,7 +31,7 @@ RUN yes | pecl install imagick && docker-php-ext-enable imagick
 
 # Add the Omeka-S PHP code
 # Latest Omeka version, check: https://omeka.org/s/download/
-RUN wget --no-verbose "https://github.com/omeka/omeka-s/releases/download/v3.1.0/omeka-s-3.1.0.zip" -O /var/www/latest_omeka_s.zip
+RUN wget --no-verbose "https://github.com/omeka/omeka-s/releases/download/v3.1.1/omeka-s-3.1.1.zip" -O /var/www/latest_omeka_s.zip
 RUN unzip -q /var/www/latest_omeka_s.zip -d /var/www/ \
 &&  rm /var/www/latest_omeka_s.zip \
 &&  rm -rf /var/www/html/ \
