@@ -1,4 +1,4 @@
-FROM php:8.0-apache-buster
+FROM php:8.1-apache-buster
 
 # Omeka-S web publishing platform for digital heritage collections (https://omeka.org/s/)
 # Previous maintainers: Oldrich Vykydal (o1da) - Klokan Technologies GmbH  / Eric Dodemont <eric.dodemont@skynet.be>
