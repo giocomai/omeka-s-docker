@@ -22,12 +22,16 @@ RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
     wget \
     ghostscript \
     poppler-utils \
-    libsodium-dev
+    libsodium-dev \
+    libicu-dev
 
 # Install the PHP extensions we need
 RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ --with-freetype=/usr/include/
 RUN docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql mysqli gd
 RUN yes | pecl install imagick && docker-php-ext-enable imagick 
+
+RUN docker-php-ext-configure intl
+RUN docker-php-ext-install intl
 
 # Add the Omeka-S PHP code
 # Latest Omeka version, check: https://omeka.org/s/download/
