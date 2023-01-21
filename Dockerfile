@@ -1,4 +1,4 @@
-FROM php:8.1-apache-buster
+FROM php:8.2-apache-buster
 
 # Omeka-S web publishing platform for digital heritage collections (https://omeka.org/s/)
 # Previous maintainers: Oldrich Vykydal (o1da) - Klokan Technologies GmbH  / Eric Dodemont <eric.dodemont@skynet.be>
@@ -30,12 +30,13 @@ RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ --with-freetype=/usr/i
 RUN docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql mysqli gd
 RUN yes | pecl install imagick && docker-php-ext-enable imagick 
 
+# Support for more languages, e.g. for date formatting and month names
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl
 
 # Add the Omeka-S PHP code
 # Latest Omeka version, check: https://omeka.org/s/download/
-RUN wget --no-verbose "https://github.com/omeka/omeka-s/releases/download/v3.2.3/omeka-s-3.2.3.zip" -O /var/www/latest_omeka_s.zip
+RUN wget --no-verbose "https://github.com/omeka/omeka-s/releases/download/v4.0.0/omeka-s-4.0.0.zip" -O /var/www/latest_omeka_s.zip
 RUN unzip -q /var/www/latest_omeka_s.zip -d /var/www/ \
 &&  rm /var/www/latest_omeka_s.zip \
 &&  rm -rf /var/www/html/ \
