@@ -12,6 +12,21 @@ Check out the relevant tags. At this stage, both Omeka S 3.2.3 and Omeka S 4.0.1
 
 ## docker-compose examples
 
-In this repository, you will find also a "docker-compose_traefik_example.yml". Adjust the lines where you find "FIXME" and you should be good to go with a deployed Omeka S. 
+In this repository, you will find also a "docker-compose_traefik_example.yml". Adjust the lines where you find "FIXME" and, after adjusting relevant details in the `database.ini` file you should be good to go with a deployed Omeka S. 
 
-You will also find a "docker-compose_local_example.yml".  Adjust the lines where you find "FIXME" and you should be good to go with an instance of Omeka S on your local machine at the 172.20.0.1 address. 
+In your `omekas` volume, you will have a `config` folder, and inside it a `database.ini` file.
+
+Its contents should be something along the lines of:
+
+```
+user     = "secretstring"
+password = "secretpassword"
+dbname   = "secretstring"
+host     = "omekas_db"
+```
+(obviously, fix these lines with the values you used in your docker-compose.yml)
+
+If you use this in deployment, you'll probably want to have a look also at the `local.config.php` file in the same folder.
+
+You will also find a "docker-compose_local_example.yml".  Adjust the lines where you find "FIXME", update your `database.ini` as shown above, and you should be good to go with an instance of Omeka S on your local machine at the 172.20.0.1 address. 
+
