@@ -8,7 +8,7 @@ In order to update, you normally just need to change the tag of the relevant ima
 
 Recent versions are available directly from Docker Hub  https://hub.docker.com/r/giocomai/omeka-s-docker
 
-Check out the relevant tags. At this stage, both Omeka S 3.2.3 and Omeka S 4.0.1 are kept reasonably updated. 
+Check out the relevant tags. At this stage, both Omeka S 3.2.3 and Omeka S 4.0.3 are kept reasonably updated. 
 
 ## docker-compose examples
 
