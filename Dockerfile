@@ -36,7 +36,7 @@ RUN docker-php-ext-install intl
 
 # Add the Omeka-S PHP code
 # Latest Omeka version, check: https://omeka.org/s/download/
-RUN wget --no-verbose "https://github.com/omeka/omeka-s/releases/download/v4.0.3/omeka-s-4.0.3.zip" -O /var/www/latest_omeka_s.zip
+RUN wget --no-verbose "https://github.com/omeka/omeka-s/releases/download/v4.0.4/omeka-s-4.0.4.zip" -O /var/www/latest_omeka_s.zip
 RUN unzip -q /var/www/latest_omeka_s.zip -d /var/www/ \
 &&  rm /var/www/latest_omeka_s.zip \
 &&  rm -rf /var/www/html/ \
