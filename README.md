@@ -2,7 +2,21 @@
 
 This repository hosts a Dockerfile for easily deploying Omeka S with Docker. The core idea of these images is that they take care only of Omeka S core: you will need to take care of the config files, modules, and themes. 
 
-In order to update, you normally just need to change the tag of the relevant image if you're taking this from Docker Hub, or update the relevant line in the Dockerfile if you build this image yourself. 
+In order to update, you normally just need to change the tag of the relevant image if you're taking this from Docker Hub, or update the relevant line in the Dockerfile if you build this image yourself.
+
+## Environment Variables
+
+You can configure the database connection using environment variables instead of editing the database.ini file directly:
+
+| Variable                | Description                          | Default |
+|-------------------------|--------------------------------------|---------|
+| MYSQL_DATABASE_USER     | Database username                    |         |
+| MYSQL_DATABASE_PASSWORD | Database password                    |         |
+| MYSQL_DATABASE_NAME     | Database name                        |         |
+| MYSQL_DATABASE_HOST     | Database host                        |         |
+| MYSQL_DATABASE_PORT     | Database port (optional)             | 3306    |
+| MYSQL_DATABASE_SOCKET   | Database unix socket path (optional) |         |
+| MYSQL_DATABASE_LOG_PATH | Database log path (optional)         |         |
 
 ## Docker Hub
 
