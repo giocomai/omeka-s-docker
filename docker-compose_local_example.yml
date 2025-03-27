@@ -5,26 +5,23 @@ services:
   omekas:
     depends_on:
       - omekas_db
-    image:  docker.io/giocomai/omeka-s-docker:v3.2.3.production
+    image:  docker.io/giocomai/omeka-s-docker:v4.1.1.production
     container_name: omekas
     ports:
       - "8000:80"
-    restart: always
+    restart: unless-stopped
     environment:
-      DB_USER: secretstring #FIXME
-      DB_PASSWORD: secretpassword #FIXME
-      DB_NAME: secretstring #FIXME
-      DB_HOST: omekas_db
+      MYSQL_USER: secretstring #FIXME
+      MYSQL_PASSWORD: secretpassword #FIXME
+      MYSQL_DATABASE: secretstring #FIXME
+      MYSQL_HOST: omekas_db
     volumes:
       - omekas:/var/www/html/volume:Z
-    networks:
-      static-network:
-        ipv4_address: 172.20.0.1
 
   omekas_db:
-    image: docker.io/library/mysql:5.7
+    image: mysql:latest
     container_name: omekas_db
-    restart: always
+    restart: unless-stopped
     volumes:
       - omeka_db:/var/lib/mysql:Z
     environment:
@@ -32,18 +29,7 @@ services:
       MYSQL_DATABASE: secretstring #FIXME
       MYSQL_USER: secretstring #FIXME
       MYSQL_PASSWORD: secretpassword #FIXME
-    networks:
-      static-network:
-        ipv4_address: 172.20.0.2
-
 
 volumes:
   omeka_db:
   omekas:
-networks:
-  static-network:
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
-          #docker-compose v3+ do not use ip_range
-          ip_range: 172.28.5.0/24

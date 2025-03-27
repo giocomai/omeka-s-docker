@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+
+# Configure database.ini using environment variables
+{
+  echo "user     = ${MYSQL_USER:-}"
+  echo "password = ${MYSQL_PASSWORD:-}"
+  echo "dbname   = ${MYSQL_DATABASE:-}"
+  echo "host     = ${MYSQL_HOST:-}"
+  echo "port     = ${MYSQL_TCP_PORT:-3306}"
+
+  if [ -n "${MYSQL_UNIX_PORT:-}" ]; then
+    echo "unix_socket = ${MYSQL_UNIX_PORT}"
+  else
+    echo ";unix_socket ="
+  fi
+
+  if [ -n "${MYSQL_LOG_PATH:-}" ]; then
+    echo "log_path = ${MYSQL_LOG_PATH}"
+  else
+    echo ";log_path ="
+  fi
+} > /var/www/html/volume/config/database.ini
+
+# Set permissions
+chmod 600 /var/www/html/volume/config/database.ini
+chown www-data:www-data /var/www/html/volume/config/database.ini
+
+# Run the original Docker PHP entrypoint (ref. file https://github.com/docker-library/php/blob/master/8.2/bookworm/apache/docker-php-entrypoint)
+# first argument is `-f` or another option
+if [ "${1#-}" != "$1" ]; then
+	set -- apache2-foreground "$@"
+fi
+
+exec "$@"
