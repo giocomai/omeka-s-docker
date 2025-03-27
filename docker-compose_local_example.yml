@@ -10,6 +10,11 @@ services:
     ports:
       - "8000:80"
     restart: always
+    environment:
+      DB_USER: secretstring #FIXME
+      DB_PASSWORD: secretpassword #FIXME
+      DB_NAME: secretstring #FIXME
+      DB_HOST: omekas_db
     volumes:
       - omekas:/var/www/html/volume:Z
     networks:

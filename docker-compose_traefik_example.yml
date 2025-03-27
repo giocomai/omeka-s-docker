@@ -56,6 +56,11 @@ services:
     image: giocomai/omeka-s-docker:v3.2.3.production
     container_name: omekas
     restart: always
+    environment:
+      DB_USER: secretstring #FIXME
+      DB_PASSWORD: secretpassword #FIXME
+      DB_NAME: secretstring #FIXME
+      DB_HOST: omekas_db
     networks:
       - network1
     links:

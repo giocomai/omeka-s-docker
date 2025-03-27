@@ -51,6 +51,18 @@ RUN mkdir -p /var/www/html/volume/config/ && mkdir -p /var/www/html/volume/files
 
 COPY ./database.ini /var/www/html/volume/config/
 COPY ./local.config.php /var/www/html/volume/config/
+
+# Create script to update database.ini with environment variables
+RUN echo '#!/bin/sh\n\
+if [ ! -z "$DB_USER" ]; then sed -i "s/^user\\s*=.*/user     = \"$DB_USER\"/" /var/www/html/volume/config/database.ini; fi\n\
+if [ ! -z "$DB_PASSWORD" ]; then sed -i "s/^password\\s*=.*/password = \"$DB_PASSWORD\"/" /var/www/html/volume/config/database.ini; fi\n\
+if [ ! -z "$DB_NAME" ]; then sed -i "s/^dbname\\s*=.*/dbname   = \"$DB_NAME\"/" /var/www/html/volume/config/database.ini; fi\n\
+if [ ! -z "$DB_HOST" ]; then sed -i "s/^host\\s*=.*/host     = \"$DB_HOST\"/" /var/www/html/volume/config/database.ini; fi\n\
+if [ ! -z "$DB_PORT" ]; then sed -i "s/^;port\\s*=.*/port     = \"$DB_PORT\"/" /var/www/html/volume/config/database.ini; fi\n\
+if [ ! -z "$DB_SOCKET" ]; then sed -i "s/^;unix_socket\\s*=.*/unix_socket = \"$DB_SOCKET\"/" /var/www/html/volume/config/database.ini; fi\n\
+if [ ! -z "$DB_LOG_PATH" ]; then sed -i "s/^;log_path\\s*=.*/log_path = \"$DB_LOG_PATH\"/" /var/www/html/volume/config/database.ini; fi\n\
+exec "$@"' > /usr/local/bin/docker-entrypoint.sh && chmod +x /usr/local/bin/docker-entrypoint.sh
+
 RUN rm /var/www/html/config/database.ini \
 && ln -s /var/www/html/volume/config/database.ini /var/www/html/config/database.ini \
 && rm /var/www/html/config/local.config.php \
@@ -69,4 +81,5 @@ RUN rm /var/www/html/config/database.ini \
 VOLUME /var/www/html/volume/
 \
 CMD echo "ServerName localhost" >> /etc/apache2/apache2.conf
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
