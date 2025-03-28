@@ -6,7 +6,7 @@ FROM php:8.2-apache-bookworm
 
 RUN a2enmod rewrite
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -qq update && apt-get -qq -y upgrade
 RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
     unzip \
@@ -49,6 +49,7 @@ COPY ./.htaccess /var/www/html/.htaccess
 # Create one volume for files, config, themes and modules
 RUN mkdir -p /var/www/html/volume/config/ && mkdir -p /var/www/html/volume/files/ && mkdir -p /var/www/html/volume/modules/ && mkdir -p /var/www/html/volume/themes/
 
+
 COPY ./database.ini /var/www/html/volume/config/
 COPY ./local.config.php /var/www/html/volume/config/
 RUN rm /var/www/html/config/database.ini \
@@ -67,6 +68,8 @@ RUN rm /var/www/html/config/database.ini \
 && chmod 600 /var/www/html/.htaccess
 
 VOLUME /var/www/html/volume/
-\
-CMD echo "ServerName localhost" >> /etc/apache2/apache2.conf
-CMD ["apache2-foreground"]
+
+# Overwrite the original Docker PHP entrypoint
+COPY docker-php-entrypoint /usr/local/bin/
+
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
