@@ -1,7 +1,7 @@
 <?php
 return [
     'logger' => [
-        'log' => false,
+        'log' => true,
         'priority' => \Zend\Log\Logger::NOTICE,
     ],
     'http_client' => [

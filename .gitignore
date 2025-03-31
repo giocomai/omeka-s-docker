@@ -7,3 +7,4 @@ config
 modules
 omeka
 themes
+logs

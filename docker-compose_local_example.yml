@@ -15,6 +15,13 @@ services:
       MYSQL_PASSWORD: secretpassword #FIXME
       MYSQL_DATABASE: secretstring #FIXME
       MYSQL_HOST: omekas_db
+      APPLICATION_ENV: development
+      OMEKA_THEME_URL: https://github.com/omeka-s-themes/default/releases/download/v1.9.1/theme-default-v1.9.1.zip
+      OMEKA_PLUGINS: |
+        https://github.com/Daniel-KM/Omeka-S-module-Common/releases/download/3.4.66/Common-3.4.66.zip      
+        https://github.com/Daniel-KM/Omeka-S-module-EasyAdmin/releases/download/3.4.29/EasyAdmin-3.4.29.zip
+        https://github.com/Daniel-KM/Omeka-S-module-Adminer/releases/download/3.4.5-4.8.4/Adminer-3.4.5-4.8.4.zip
+
     volumes:
       - omekas:/var/www/html/volume:Z
 
