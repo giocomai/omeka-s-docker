@@ -19,9 +19,7 @@ You can configure the database connection using environment variables instead of
 | MYSQL_DATABASE_LOG_PATH | Database log path (optional)           |              |
 | APPLICATION_ENV         | App mode: development or production    | production   |
 | OMEKA_THEME_URL         | Url of the theme zip file              |              |
-| OMEKA_THEME_URL         | URL of the theme zip file              |              |
 | OMEKA_PLUGINS           | List of plugin zip URLs (one per line) |              |
-
 
 ## Docker Hub
 
