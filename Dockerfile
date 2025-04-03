@@ -6,7 +6,17 @@ FROM php:8.2-apache-bookworm
 
 RUN a2enmod rewrite
 
-ENV DEBIAN_FRONTEND=noninteractive
+# Set default environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    APPLICATION_ENV=production
+
+# Use the default production configuration
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+# Redirect Apache logs to stdout/stderr
+RUN ln -sf /dev/stdout /var/log/apache2/access.log && \
+    ln -sf /dev/stderr /var/log/apache2/error.log
+
 RUN apt-get -qq update && apt-get -qq -y upgrade
 RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
     unzip \
@@ -43,7 +53,7 @@ RUN unzip -q /var/www/latest_omeka_s.zip -d /var/www/ \
 &&  mv /var/www/omeka-s/ /var/www/html/
 
 COPY ./imagemagick-policy.xml /etc/ImageMagick-6/policy.xml
-COPY ./.htaccess /var/www/html/.htaccess
+#COPY ./.htaccess /var/www/html/.htaccess
 
 
 # Create one volume for files, config, themes and modules

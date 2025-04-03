@@ -1,6 +1,13 @@
 #!/bin/sh
 set -e
 
+# Set php.ini and .htaccess according to APPLICATION_ENV
+if [ "$APPLICATION_ENV" = "development" ]; then
+    cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+    sed -i 's|SetEnv APPLICATION_ENV "production"|SetEnv APPLICATION_ENV "development"|' /var/www/html/.htaccess
+# else
+#     cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+fi
 # Configure database.ini using environment variables
 {
   echo "user     = ${MYSQL_USER:-}"
@@ -25,6 +32,50 @@ set -e
 # Set permissions
 chmod 600 /var/www/html/volume/config/database.ini
 chown www-data:www-data /var/www/html/volume/config/database.ini
+
+# Automatically download and install theme if not present
+if [ -n "$OMEKA_THEME_URL" ]; then
+  THEME_NAME=$(basename "$OMEKA_THEME_URL" .zip | sed 's/^theme-//')
+  THEME_DIR="/var/www/html/volume/themes/$THEME_NAME"
+
+  if [ -d "$THEME_DIR" ]; then
+    echo "Theme '$THEME_NAME' already exists. Skipping."
+  else
+    TMPDIR=$(mktemp -d)
+    echo "Downloading and installing theme from $OMEKA_THEME_URL"
+    curl -sL "$OMEKA_THEME_URL" -o "$TMPDIR/theme.zip"
+    unzip -oq "$TMPDIR/theme.zip" -d /var/www/html/volume/themes
+    rm -rf "$TMPDIR"
+  fi
+else
+  echo "No theme URL provided. Skipping theme installation."
+fi
+
+# Automatically download and install plugins if provided
+if [ -n "$OMEKA_PLUGINS" ]; then
+  echo "Installing plugins..."
+  TMPDIR=$(mktemp -d)
+
+  echo "$OMEKA_PLUGINS" | while read -r plugin_url; do
+    [ -z "$plugin_url" ] && continue
+
+    PLUGIN_NAME=$(basename "$plugin_url" .zip)
+    PLUGIN_DIR="/var/www/html/volume/modules/$PLUGIN_NAME"
+
+    if [ -d "$PLUGIN_DIR" ]; then
+      echo "Plugin '$PLUGIN_NAME' already exists. Skipping."
+      continue
+    fi
+
+    echo "Downloading plugin from $plugin_url"
+    curl -sL "$plugin_url" -o "$TMPDIR/plugin.zip"
+    unzip -oq "$TMPDIR/plugin.zip" -d /var/www/html/volume/modules
+  done
+
+  rm -rf "$TMPDIR"
+else
+  echo "No plugin URLs provided. Skipping plugin installation."
+fi
 
 # Run the original Docker PHP entrypoint (ref. file https://github.com/docker-library/php/blob/master/8.2/bookworm/apache/docker-php-entrypoint)
 # first argument is `-f` or another option
