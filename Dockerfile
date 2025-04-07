@@ -6,7 +6,17 @@ FROM php:8.2-apache-bookworm
 
 RUN a2enmod rewrite
 
-ENV DEBIAN_FRONTEND=noninteractive
+# Set default environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    APPLICATION_ENV=production
+
+# Use the default production configuration
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+# Redirect Apache logs to stdout/stderr
+RUN ln -sf /dev/stdout /var/log/apache2/access.log && \
+    ln -sf /dev/stderr /var/log/apache2/error.log
+
 RUN apt-get -qq update && apt-get -qq -y upgrade
 RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
     unzip \
@@ -43,11 +53,9 @@ RUN unzip -q /var/www/latest_omeka_s.zip -d /var/www/ \
 &&  mv /var/www/omeka-s/ /var/www/html/
 
 COPY ./imagemagick-policy.xml /etc/ImageMagick-6/policy.xml
-COPY ./.htaccess /var/www/html/.htaccess
 
-
-# Create one volume for files, config, themes and modules
-RUN mkdir -p /var/www/html/volume/config/ && mkdir -p /var/www/html/volume/files/ && mkdir -p /var/www/html/volume/modules/ && mkdir -p /var/www/html/volume/themes/
+# Create one volume for files, config, themes, modules and logs
+RUN mkdir -p /var/www/html/volume/config/ && mkdir -p /var/www/html/volume/files/ && mkdir -p /var/www/html/volume/modules/ && mkdir -p /var/www/html/volume/themes/ && mkdir -p /var/www/html/volume/logs/
 
 
 COPY ./database.ini /var/www/html/volume/config/
@@ -62,6 +70,8 @@ RUN rm /var/www/html/config/database.ini \
 && ln -s /var/www/html/volume/modules/ /var/www/html/modules \
 && rm -Rf /var/www/html/themes/ \
 && ln -s /var/www/html/volume/themes/ /var/www/html/themes \
+&& rm -Rf /var/www/html/logs/ \
+&& ln -s /var/www/html/volume/logs/ /var/www/html/logs \
 && chown -R www-data:www-data /var/www/html/ \
 && chmod 600 /var/www/html/volume/config/database.ini \
 && chmod 600 /var/www/html/volume/config/local.config.php \
