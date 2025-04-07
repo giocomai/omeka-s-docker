@@ -62,8 +62,7 @@ services:
       MYSQL_DATABASE: secretstring #FIXME
       MYSQL_HOST: omekas_db
       APPLICATION_ENV: production
-      OMEKA_THEME_URL: https://github.com/omeka-s-themes/default/releases/download/v1.9.1/theme-default-v1.9.1.zip
-
+      OMEKA_THEMES: https://github.com/omeka-s-themes/default/releases/download/v1.9.1/theme-default-v1.9.1.zip
     networks:
       - network1
     links:

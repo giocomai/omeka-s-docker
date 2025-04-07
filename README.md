@@ -18,8 +18,8 @@ You can configure the database connection using environment variables instead of
 | MYSQL_DATABASE_SOCKET   | Database unix socket path (optional)   |              |
 | MYSQL_DATABASE_LOG_PATH | Database log path (optional)           |              |
 | APPLICATION_ENV         | App mode: development or production    | production   |
-| OMEKA_THEME_URL         | Url of the theme zip file              |              |
-| OMEKA_PLUGINS           | List of plugin zip URLs (one per line) |              |
+| OMEKA_THEMES            | List of theme zip URLs                 |              |
+| OMEKA_MODULES           | List of module zip URLs                |              |
 
 ## Docker Hub
 
@@ -47,11 +47,11 @@ If you use this in deployment, you'll probably want to have a look also at the `
 
 You will also find a "docker-compose_local_example.yml".  Adjust the lines where you find "FIXME", update your `database.ini` as shown above, and you should be good to go with an instance of Omeka S on your local machine at the 172.20.0.1 address. 
 
-## Installing a Theme Automatically
+## Installing Themes Automatically
 
-You can automatically download and install a theme by setting the `OMEKA_THEME_URL` environment variable. This should point to a ZIP file of a valid Omeka S theme.
+You can automatically download and install themes by setting the `OMEKA_THEMES` environment variable.  This should contain one or more URLs (one per line) pointing to ZIP files of valid Omeka S themes.
 
-The ZIP archive is expected to contain a single folder at its root (as most Omeka themes do). That folder will be extracted into the `themes` directory inside your persistent volume.
+The ZIP archives are expected to contain a single folder at their root (as most Omeka themes do). These folders will be extracted into the `themes` directory inside your persistent volume.
 
 ### Example
 
@@ -62,7 +62,7 @@ services:
   omeka:
     image: your-image:latest
     environment:
-      OMEKA_THEME_URL: https://github.com/omeka-s-themes/default/releases/download/v1.9.1/theme-default-v1.9.1.zip
+      OMEKA_THEMES: https://github.com/omeka-s-themes/default/releases/download/v1.9.1/theme-default-v1.9.1.zip
 ```
 When the container starts, it will:
 
@@ -72,9 +72,9 @@ When the container starts, it will:
 
 If the theme is already present in the `themes` directory, the download will be skipped.
 
-## Installing Plugins Automatically
+## Installing Modules Automatically
 
-You can also automatically install plugins by setting the `OMEKA_PLUGINS` environment variable. This should contain one or more URLs (one per line) pointing to ZIP files of valid Omeka S modules.
+You can also automatically install modules by setting the `OMEKA_MODULES` environment variable. This should contain one or more URLs (one per line) pointing to ZIP files of valid Omeka S modules.
 
 The ZIP archives are expected to contain a single folder at their root. These folders will be extracted into the `modules` directory inside your persistent volume.
 
@@ -87,7 +87,7 @@ services:
   omeka:
     image: your-image:latest
     environment:
-      OMEKA_PLUGINS: |
+      OMEKA_MODULES: |
         https://github.com/Daniel-KM/Omeka-S-module-Common/releases/download/3.4.66/Common-3.4.66.zip
         https://github.com/Daniel-KM/Omeka-S-module-EasyAdmin/releases/download/3.4.29/EasyAdmin-3.4.29.zip
 ```
@@ -98,4 +98,4 @@ At container startup:
 2. Its contents will be extracted into `/var/www/html/volume/modules/`.
 3. Permissions will be set accordingly.
 
-If a plugin is already present in the `modules` directory, the download will still proceed unless you implement further logic for skipping.
+If a module is already present in the `modules` directory, the download will still proceed unless you implement further logic for skipping.
