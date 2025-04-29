@@ -36,8 +36,6 @@ RUN apt-get -qq update && \
         # For Imagick extension
         imagemagick \
         libmagickwand-dev \
-        # libmemcached-dev # Only if you install the memcached PHP extension
-        # libmcrypt-dev # Obsolete, remove unless specifically needed for very old code
     # Cleanup apt cache
     && apt-get clean
 
