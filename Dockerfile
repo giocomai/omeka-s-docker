@@ -17,32 +17,44 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 RUN ln -sf /dev/stdout /var/log/apache2/access.log && \
     ln -sf /dev/stderr /var/log/apache2/error.log
 
-RUN apt-get -qq update && apt-get -qq -y upgrade
-RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
-    unzip \
-    libfreetype6-dev \
-    libjpeg62-turbo-dev \
-    libmcrypt-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libmemcached-dev \
-    zlib1g-dev \
-    imagemagick \
-    libmagickwand-dev \
-    wget \
-    ghostscript \
-    poppler-utils \
-    libsodium-dev \
-    libicu-dev
+# Install system dependencies required by PHP extensions and Omeka-S
+RUN apt-get -qq update && \
+    apt-get -qq -y --no-install-recommends install \
+        # Utils needed later
+        unzip \
+        wget \
+        ghostscript \
+        poppler-utils \
+        # PHP Extension Runtime/Build-time Libs (-dev packages needed for compilation)
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        # libjpeg-dev # Likely redundant with libjpeg62-turbo-dev
+        libpng-dev \
+        zlib1g-dev \
+        libicu-dev \
+        libsodium-dev \
+        # For Imagick extension
+        imagemagick \
+        libmagickwand-dev \
+    # Cleanup apt cache
+    && apt-get clean
 
-# Install the PHP extensions we need
-RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ --with-freetype=/usr/include/
-RUN docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql mysqli gd
-RUN yes | pecl install imagick && docker-php-ext-enable imagick 
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Support for more languages, e.g. for date formatting and month names
-RUN docker-php-ext-configure intl
-RUN docker-php-ext-install intl
+# Install PHP extension installer tool
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+# Install PHP extensions using the tool
+# It will handle installing/removing temporary build dependencies (like build-essential)
+RUN install-php-extensions \
+    gd \
+    iconv \
+    pdo \
+    pdo_mysql \
+    mysqli \
+    imagick \
+    intl
 
 # Add the Omeka-S PHP code
 # Latest Omeka version, check: https://omeka.org/s/download/
