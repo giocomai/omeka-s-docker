@@ -9,26 +9,31 @@ if [ "$APPLICATION_ENV" = "development" ]; then
 #     cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 fi
 
-# Configure database.ini using environment variables
-{
-  echo "user     = ${MYSQL_USER:-}"
-  echo "password = ${MYSQL_PASSWORD:-}"
-  echo "dbname   = ${MYSQL_DATABASE:-}"
-  echo "host     = ${MYSQL_HOST:-}"
-  echo "port     = ${MYSQL_TCP_PORT:-3306}"
+# Configure database.ini using environment variables only if at least one is set
+if [ -n "${MYSQL_USER:-}" ] || [ -n "${MYSQL_PASSWORD:-}" ] || [ -n "${MYSQL_DATABASE:-}" ] || [ -n "${MYSQL_HOST:-}" ]; then
+  echo "Configuring database.ini from environment variables..."
+  {
+    echo "user     = ${MYSQL_USER:-}"
+    echo "password = ${MYSQL_PASSWORD:-}"
+    echo "dbname   = ${MYSQL_DATABASE:-}"
+    echo "host     = ${MYSQL_HOST:-}"
+    echo "port     = ${MYSQL_TCP_PORT:-3306}"
 
-  if [ -n "${MYSQL_UNIX_PORT:-}" ]; then
-    echo "unix_socket = ${MYSQL_UNIX_PORT}"
-  else
-    echo ";unix_socket ="
-  fi
+    if [ -n "${MYSQL_UNIX_PORT:-}" ]; then
+      echo "unix_socket = ${MYSQL_UNIX_PORT}"
+    else
+      echo ";unix_socket ="
+    fi
 
-  if [ -n "${MYSQL_LOG_PATH:-}" ]; then
-    echo "log_path = ${MYSQL_LOG_PATH}"
-  else
-    echo ";log_path ="
-  fi
-} > /var/www/html/volume/config/database.ini
+    if [ -n "${MYSQL_LOG_PATH:-}" ]; then
+      echo "log_path = ${MYSQL_LOG_PATH}"
+    else
+      echo ";log_path ="
+    fi
+  } > /var/www/html/volume/config/database.ini
+else
+  echo "No database environment variables set. Using existing database.ini if available."
+fi
 
 # Set permissions
 chmod 600 /var/www/html/volume/config/database.ini
