@@ -20,6 +20,10 @@ You can configure the database connection using environment variables instead of
 | APPLICATION_ENV         | App mode: development or production    | production   |
 | OMEKA_THEMES            | List of theme zip URLs                 |              |
 | OMEKA_MODULES           | List of module zip URLs                |              |
+| PHP_MEMORY_LIMIT        | PHP memory limit (e.g. 512M)           | 128M         |
+| PHP_UPLOAD_MAX_FILESIZE | Max upload file size (e.g. 50M)        | 2M           |
+| PHP_POST_MAX_SIZE       | Max post size (e.g. 60M)               | 8M           |
+| PHP_MAX_EXECUTION_TIME  | Max script execution time (seconds)    | 30           |
 
 ## Docker Hub
 
