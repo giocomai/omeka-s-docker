@@ -54,7 +54,8 @@ RUN install-php-extensions \
     pdo_mysql \
     mysqli \
     imagick \
-    intl
+    intl \
+    xsl
 
 # Add the Omeka-S PHP code
 # Latest Omeka version, check: https://omeka.org/s/download/
