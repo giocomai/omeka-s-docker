@@ -86,10 +86,10 @@ PHP_CUSTOM_INI="$PHP_INI_DIR/conf.d/docker-php-custom.ini"
 
 {
   echo "; Custom PHP settings from environment"
-  echo "memory_limit = ${PHP_MEMORY_LIMIT:-128M}"
-  echo "upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE:-2M}"
-  echo "post_max_size = ${PHP_POST_MAX_SIZE:-8M}"
-  echo "max_execution_time = ${PHP_MAX_EXECUTION_TIME:-30}"
+  echo "memory_limit = ${PHP_MEMORY_LIMIT:-512M}"
+  echo "upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE:-128M}"
+  echo "post_max_size = ${PHP_POST_MAX_SIZE:-128M}"
+  echo "max_execution_time = ${PHP_MAX_EXECUTION_TIME:-300}"
 } > "$PHP_CUSTOM_INI"
 
 echo "[Entrypoint] Using custom PHP configuration:"

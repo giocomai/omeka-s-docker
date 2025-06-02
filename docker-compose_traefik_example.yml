@@ -64,9 +64,9 @@ services:
       APPLICATION_ENV: production
       OMEKA_THEMES: https://github.com/omeka-s-themes/default/releases/download/v1.9.1/theme-default-v1.9.1.zip  
       PHP_MEMORY_LIMIT: 512M
-      PHP_UPLOAD_MAX_FILESIZE: 50M
-      PHP_POST_MAX_SIZE: 60M
-      PHP_MAX_EXECUTION_TIME: 90
+      PHP_UPLOAD_MAX_FILESIZE: 64M
+      PHP_POST_MAX_SIZE: 64M
+      PHP_MAX_EXECUTION_TIME: 300
     networks:
       - network1
     links:
