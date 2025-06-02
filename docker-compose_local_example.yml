@@ -22,6 +22,11 @@ services:
         https://github.com/Daniel-KM/Omeka-S-module-Common/releases/download/3.4.66/Common-3.4.66.zip      
         https://github.com/Daniel-KM/Omeka-S-module-EasyAdmin/releases/download/3.4.29/EasyAdmin-3.4.29.zip
         https://github.com/Daniel-KM/Omeka-S-module-Adminer/releases/download/3.4.5-4.8.4/Adminer-3.4.5-4.8.4.zip
+      PHP_MEMORY_LIMIT: 512M
+      PHP_UPLOAD_MAX_FILESIZE: 64M
+      PHP_POST_MAX_SIZE: 64M
+      PHP_MAX_EXECUTION_TIME: 300
+
     volumes:
       - omekas:/var/www/html/volume:Z
 

@@ -86,6 +86,20 @@ else
   echo "No module URLs provided. Skipping module installation."
 fi
 
+# Generate PHP custom config based on environment variables
+PHP_CUSTOM_INI="$PHP_INI_DIR/conf.d/docker-php-custom.ini"
+
+{
+  echo "; Custom PHP settings from environment"
+  echo "memory_limit = ${PHP_MEMORY_LIMIT:-512M}"
+  echo "upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE:-128M}"
+  echo "post_max_size = ${PHP_POST_MAX_SIZE:-128M}"
+  echo "max_execution_time = ${PHP_MAX_EXECUTION_TIME:-300}"
+} > "$PHP_CUSTOM_INI"
+
+echo "[Entrypoint] Using custom PHP configuration:"
+cat "$PHP_CUSTOM_INI"
+
 # Run the original Docker PHP entrypoint (ref. file https://github.com/docker-library/php/blob/master/8.2/bookworm/apache/docker-php-entrypoint)
 # first argument is `-f` or another option
 if [ "${1#-}" != "$1" ]; then
