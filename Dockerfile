@@ -25,6 +25,7 @@ RUN apt-get -qq update && \
         wget \
         ghostscript \
         poppler-utils \
+        netcat-openbsd \
         # PHP Extension Runtime/Build-time Libs (-dev packages needed for compilation)
         libfreetype6-dev \
         libjpeg62-turbo-dev \
@@ -94,5 +95,8 @@ VOLUME /var/www/html/volume/
 
 # Overwrite the original Docker PHP entrypoint
 COPY docker-php-entrypoint /usr/local/bin/
+
+# Copy the automatic installation script
+COPY install_cli.php /var/www/html/
 
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
