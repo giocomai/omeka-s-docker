@@ -23,6 +23,7 @@ RUN apt-get -qq update && \
         # Utils needed later
         unzip \
         wget \
+        jq \
         ghostscript \
         poppler-utils \
         # PHP Extension Runtime/Build-time Libs (-dev packages needed for compilation)

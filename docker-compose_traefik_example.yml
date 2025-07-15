@@ -62,7 +62,7 @@ services:
       MYSQL_DATABASE: secretstring #FIXME
       MYSQL_HOST: omekas_db
       APPLICATION_ENV: production
-      OMEKA_THEMES: https://github.com/omeka-s-themes/default/releases/download/v1.9.1/theme-default-v1.9.1.zip  
+      OMEKA_THEMES: https://github.com/omeka-s-themes/default 
       PHP_MEMORY_LIMIT: 512M
       PHP_UPLOAD_MAX_FILESIZE: 64M
       PHP_POST_MAX_SIZE: 64M
