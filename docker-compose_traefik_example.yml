@@ -1,9 +1,7 @@
-version: "3.3"
-
 services:
 
   traefik:
-    image: "traefik:v2.9"
+    image: "traefik:v3.4"
     container_name: "traefik"
     restart: unless-stopped
     networks:
@@ -53,7 +51,7 @@ services:
   omekas:
     depends_on:
       - omekas_db
-    image: giocomai/omeka-s-docker:v4.1.1.production
+    image: giocomai/omeka-s-docker:v4.1.1
     container_name: omekas
     restart: unless-stopped
     environment:
@@ -67,10 +65,10 @@ services:
       PHP_UPLOAD_MAX_FILESIZE: 64M
       PHP_POST_MAX_SIZE: 64M
       PHP_MAX_EXECUTION_TIME: 300
-      OMEKA_ADMIN_EMAIL: admin@example.com
-      OMEKA_ADMIN_NAME: "Site Administrator"
-      OMEKA_ADMIN_PASSWORD: supersecret
-      OMEKA_SITE_TITLE: "My Omeka Site"
+      OMEKA_ADMIN_EMAIL: admin@example.com #FIXME
+      OMEKA_ADMIN_NAME: "Site Administrator" #FIXME
+      OMEKA_ADMIN_PASSWORD: supersecret #FIXME
+      OMEKA_SITE_TITLE: "My Omeka Site" #FIXME
     networks:
       - network1
     links:

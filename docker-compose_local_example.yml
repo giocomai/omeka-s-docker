@@ -1,12 +1,10 @@
-version: "3.3"
-
 services:
 
   omekas:
     build: .
     depends_on:
       - omekas_db
-    image:  docker.io/giocomai/omeka-s-docker:v4.1.1.production
+    image:  giocomai/omeka-s-docker:v4.1.1
     container_name: omekas
     ports:
       - "8000:80"
