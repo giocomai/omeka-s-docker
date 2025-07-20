@@ -7,6 +7,20 @@ if ! command -v jq >/dev/null 2>&1; then
     exit 1
 fi
 
+
+# Function to check the availability of a database
+check_db_availability() {
+    local db_host="$1"
+    local db_port="$2"
+    echo "Waiting for $db_host:$db_port to be ready..."
+    while ! nc -w 1 "$db_host" "$db_port" > /dev/null 2>&1; do
+        # Show some progress
+        echo -n '.'
+        sleep 1
+    done
+    echo "\n\nGreat, $db_host is ready!"
+}
+
 # Set php.ini and .htaccess according to APPLICATION_ENV
 if [ "$APPLICATION_ENV" = "development" ]; then
     cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
@@ -171,6 +185,35 @@ PHP_CUSTOM_INI="$PHP_INI_DIR/conf.d/docker-php-custom.ini"
 
 echo "[Entrypoint] Using custom PHP configuration:"
 cat "$PHP_CUSTOM_INI"
+
+# Install Omeka S only if required environment variables are set and not empty
+if [ -n "${OMEKA_ADMIN_EMAIL:-}" ] && [ -n "${OMEKA_ADMIN_NAME:-}" ] && \
+   [ -n "${OMEKA_ADMIN_PASSWORD:-}" ] && [ -n "${OMEKA_SITE_TITLE:-}" ]; then
+  echo "[Entrypoint] Installing Omeka S via CLI..."
+
+  # If MYSQL_HOST is set, check the availability of the database
+  if [ -n "$MYSQL_HOST" ]; then
+      check_db_availability "$MYSQL_HOST" 3306
+  fi
+
+  CMD="php install_cli.php \
+    --email=\"$OMEKA_ADMIN_EMAIL\" \
+    --name=\"$OMEKA_ADMIN_NAME\" \
+    --password=\"$OMEKA_ADMIN_PASSWORD\" \
+    --title=\"$OMEKA_SITE_TITLE\""
+
+  if [ -n "${OMEKA_TIMEZONE:-}" ]; then
+    CMD="$CMD --timezone=\"$OMEKA_TIMEZONE\""
+  fi
+
+  if [ -n "${OMEKA_LOCALE:-}" ]; then
+    CMD="$CMD --locale=\"$OMEKA_LOCALE\""
+  fi
+
+  eval "$CMD"
+else
+  echo "[Entrypoint] Skipping Omeka S install: missing required environment variables (OMEKA_ADMIN_EMAIL, OMEKA_ADMIN_NAME, OMEKA_ADMIN_PASSWORD, OMEKA_SITE_TITLE)"
+fi
 
 # Run the original Docker PHP entrypoint (ref. file https://github.com/docker-library/php/blob/master/8.2/bookworm/apache/docker-php-entrypoint)
 # first argument is `-f` or another option

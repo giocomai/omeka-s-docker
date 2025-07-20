@@ -24,6 +24,14 @@ You can configure the database connection using environment variables instead of
 | PHP_UPLOAD_MAX_FILESIZE | Max upload file size (e.g. 64M)        | 128M         |
 | PHP_POST_MAX_SIZE       | Max post size (e.g. 64M)               | 128M         |
 | PHP_MAX_EXECUTION_TIME  | Max script execution time (seconds)    | 300          |
+| OMEKA_ADMIN_EMAIL       | Email for the first Omeka S admin user |              |
+| OMEKA_ADMIN_NAME        | Name of the first admin user           |              |
+| OMEKA_ADMIN_PASSWORD    | Password for the admin user            |              |
+| OMEKA_SITE_TITLE        | Public title of the Omeka S site       |              |
+| OMEKA_TIMEZONE          | Installation timezone (optional)       | UTC          |
+| OMEKA_LOCALE            | Interface locale (optional)            | en_US        |
+
+> If the `OMEKA_ADMIN_` variables (`EMAIL`, `NAME`, `PASSWORD`, `SITE_TITLE`) are not set, Omeka S will not be configured automatically at startup.
 
 ## Docker Hub
 

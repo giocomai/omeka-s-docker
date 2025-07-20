@@ -26,7 +26,10 @@ services:
       PHP_UPLOAD_MAX_FILESIZE: 64M
       PHP_POST_MAX_SIZE: 64M
       PHP_MAX_EXECUTION_TIME: 300
-
+      OMEKA_ADMIN_EMAIL: admin@example.com
+      OMEKA_ADMIN_NAME: "Site Administrator"
+      OMEKA_ADMIN_PASSWORD: supersecret
+      OMEKA_SITE_TITLE: "My Omeka Site"
     volumes:
       - omekas:/var/www/html/volume:Z
 
