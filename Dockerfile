@@ -23,6 +23,7 @@ RUN apt-get -qq update && \
         # Utils needed later
         unzip \
         wget \
+        jq \
         ghostscript \
         poppler-utils \
         netcat-openbsd \

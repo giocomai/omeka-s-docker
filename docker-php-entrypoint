@@ -1,6 +1,13 @@
 #!/bin/sh
 set -e
 
+# Check if jq is installed
+if ! command -v jq >/dev/null 2>&1; then
+    echo "ERROR: jq is required but not installed. Please install jq first." >&2
+    exit 1
+fi
+
+
 # Function to check the availability of a database
 check_db_availability() {
     local db_host="$1"
@@ -52,51 +59,117 @@ fi
 chmod 600 /var/www/html/volume/config/database.ini
 chown www-data:www-data /var/www/html/volume/config/database.ini
 
-# Automatically download and install themes if provided
-if [ -n "$OMEKA_THEMES" ]; then
-  echo "Installing themes..."
-  TMPDIR=$(mktemp -d)
-  echo "$OMEKA_THEMES" | while read -r theme_url; do
-    [ -z "$theme_url" ] && continue
-    THEME_NAME=$(basename "$theme_url" .zip | sed 's/^theme-//')
-    THEME_DIR="/var/www/html/volume/themes/$THEME_NAME"
-    if [ -d "$THEME_DIR" ]; then
-      echo "Theme '$THEME_NAME' already exists. Skipping."
-      continue
+# Function to get download URL from GitHub repository URL
+get_github_zip_url() {
+    repo_url="$1"
+    # Normalize URL by removing trailing slashes
+    normalized_url=$(echo "$repo_url" | sed 's|/*$||')
+
+    # Extract owner and repo from URL
+    owner=$(echo "$normalized_url" | sed -n 's|https://github.com/\([^/]*\)/\([^/]*\)$|\1|p')
+    repo=$(echo "$normalized_url" | sed -n 's|https://github.com/\([^/]*\)/\([^/]*\)$|\2|p')
+
+    if [ -z "$owner" ] || [ -z "$repo" ]; then
+        echo "ERROR: Invalid GitHub repository URL: $repo_url" >&2
+        return 1
     fi
-    echo "Downloading theme from $theme_url"
-    curl -sL "$theme_url" -o "$TMPDIR/theme.zip"
-    unzip -oq "$TMPDIR/theme.zip" -d /var/www/html/volume/themes
-  done
-  rm -rf "$TMPDIR"
+
+    api_url="https://api.github.com/repos/${owner}/${repo}/releases/latest"
+    download_url=$(curl -s "$api_url" | jq -r '.assets[] | select(.name | endswith(".zip")) | .browser_download_url' | head -n 1)
+
+    if [ -n "$download_url" ] && [ "$download_url" != "null" ]; then
+        echo "$download_url"
+    else
+        echo "ERROR: No ZIP asset found for $repo_url" >&2
+        return 1
+    fi
+}
+
+# Function to process download URLs
+process_download() {
+    url="$1"
+    type="$2"
+
+    case "$url" in
+        *.zip)
+            # Direct ZIP link
+            echo "$url"
+            ;;
+        https://github.com/*)
+            # GitHub repository URL
+            get_github_zip_url "$url"
+            ;;
+        *)
+            echo "ERROR: Unsupported URL format for $type: $url" >&2
+            return 1
+            ;;
+    esac
+}
+
+# Automatically download and install themes
+if [ -n "$OMEKA_THEMES" ]; then
+    echo "Installing themes..."
+    TMPDIR=$(mktemp -d)
+    echo "$OMEKA_THEMES" | while IFS= read -r theme_url; do
+        [ -z "$theme_url" ] && continue
+
+        # Resolve download URL
+        resolved_url=$(process_download "$theme_url" "theme") || continue
+        echo "Resolved theme URL: $resolved_url"
+
+        THEME_NAME=$(basename "$resolved_url" .zip | sed 's/^theme-//')
+        THEME_DIR="/var/www/html/volume/themes/$THEME_NAME"
+
+        if [ -d "$THEME_DIR" ]; then
+            echo "Theme '$THEME_NAME' already exists. Skipping."
+            continue
+        fi
+
+        echo "Downloading theme from $resolved_url"
+        if ! curl -sL "$resolved_url" -o "$TMPDIR/theme.zip"; then
+            echo "ERROR: Failed to download theme from $resolved_url" >&2
+            continue
+        fi
+
+        unzip -oq "$TMPDIR/theme.zip" -d /var/www/html/volume/themes
+    done
+    rm -rf "$TMPDIR"
 else
-  echo "No theme URLs provided. Skipping theme installation."
+    echo "No theme URLs provided. Skipping theme installation."
 fi
 
-# Automatically download and install modules if provided
+# Automatically download and install modules
 if [ -n "$OMEKA_MODULES" ]; then
-  echo "Installing modules..."
-  TMPDIR=$(mktemp -d)
+    echo "Installing modules..."
+    TMPDIR=$(mktemp -d)
 
-  echo "$OMEKA_MODULES" | while read -r module_url; do
-    [ -z "$module_url" ] && continue
+    echo "$OMEKA_MODULES" | while IFS= read -r module_url; do
+        [ -z "$module_url" ] && continue
 
-    MODULE_NAME=$(basename "$module_url" .zip)
-    MODULE_DIR="/var/www/html/volume/modules/$MODULE_NAME"
+        # Resolve download URL
+        resolved_url=$(process_download "$module_url" "module") || continue
+        echo "Resolved module URL: $resolved_url"
 
-    if [ -d "$MODULE_DIR" ]; then
-      echo "Plugin '$MODULE_NAME' already exists. Skipping."
-      continue
-    fi
+        MODULE_NAME=$(basename "$resolved_url" .zip)
+        MODULE_DIR="/var/www/html/volume/modules/$MODULE_NAME"
 
-    echo "Downloading module from $module_url"
-    curl -sL "$module_url" -o "$TMPDIR/module.zip"
-    unzip -oq "$TMPDIR/module.zip" -d /var/www/html/volume/modules
-  done
+        if [ -d "$MODULE_DIR" ]; then
+            echo "Module '$MODULE_NAME' already exists. Skipping."
+            continue
+        fi
 
-  rm -rf "$TMPDIR"
+        echo "Downloading module from $resolved_url"
+        if ! curl -sL "$resolved_url" -o "$TMPDIR/module.zip"; then
+            echo "ERROR: Failed to download module from $resolved_url" >&2
+            continue
+        fi
+
+        unzip -oq "$TMPDIR/module.zip" -d /var/www/html/volume/modules
+    done
+
+    rm -rf "$TMPDIR"
 else
-  echo "No module URLs provided. Skipping module installation."
+    echo "No module URLs provided. Skipping module installation."
 fi
 
 # Generate PHP custom config based on environment variables
