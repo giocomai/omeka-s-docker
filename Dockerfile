@@ -38,6 +38,8 @@ RUN apt-get -qq update && \
         # For Imagick extension
         imagemagick \
         libmagickwand-dev \
+        zip \
+        unzip \
     # Cleanup apt cache
     && apt-get clean
 
