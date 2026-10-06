@@ -28,8 +28,11 @@ services:
       OMEKA_ADMIN_NAME: "Site Administrator"
       OMEKA_ADMIN_PASSWORD: supersecret #FIXME
       OMEKA_SITE_TITLE: "My Omeka Site"
+      # Optional: apply an Omeka S blueprint at startup (see README)
+      # OMEKA_BLUEPRINT: /config/blueprint.json
     volumes:
       - omekas:/var/www/html/volume:Z
+      # - ./blueprint_example.json:/config/blueprint.json:ro
 
   omekas_db:
     image: mysql:latest
