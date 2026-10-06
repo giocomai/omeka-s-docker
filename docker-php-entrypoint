@@ -215,6 +215,48 @@ else
   echo "[Entrypoint] Skipping Omeka S install: missing required environment variables (OMEKA_ADMIN_EMAIL, OMEKA_ADMIN_NAME, OMEKA_ADMIN_PASSWORD, OMEKA_SITE_TITLE)"
 fi
 
+# Apply an Omeka S blueprint (https://github.com/omeka-s-contrib/omeka-s-blueprints) with Omeka-S-Cli.
+# Omeka S is installed by the step above (or the web installer), so the blueprint's "install"
+# section is skipped (--skip core).
+# Deploying is idempotent, so the blueprint is applied again on every start.
+deploy_blueprint() {
+    if ! omeka-s-cli | grep -q 'blueprint:deploy'; then
+        echo "ERROR: omeka-s-cli with blueprint:deploy support is not available." >&2
+        return 1
+    fi
+    if ! omeka-s-cli core:status --is-installed --base-path /var/www/html; then
+        echo "ERROR: Omeka S is not installed, or its database is not reachable. Set OMEKA_ADMIN_EMAIL, OMEKA_ADMIN_NAME, OMEKA_ADMIN_PASSWORD and OMEKA_SITE_TITLE, or finish the web installer and restart the container." >&2
+        return 1
+    fi
+    omeka-s-cli blueprint:deploy "$OMEKA_BLUEPRINT" --base-path /var/www/html --skip core --force
+}
+
+if [ -n "${OMEKA_BLUEPRINT:-}" ]; then
+  case "${OMEKA_BLUEPRINT_ON_ERROR:=abort}" in
+    abort|warn) ;;
+    *)
+      echo "ERROR: Invalid OMEKA_BLUEPRINT_ON_ERROR '$OMEKA_BLUEPRINT_ON_ERROR' (expected 'abort' or 'warn')." >&2
+      exit 1
+      ;;
+  esac
+
+  echo "[Entrypoint] Applying Omeka S blueprint via Omeka-S-Cli..."
+
+  # If MYSQL_HOST is set, check the availability of the database
+  if [ -n "$MYSQL_HOST" ]; then
+      check_db_availability "$MYSQL_HOST" 3306
+  fi
+
+  if deploy_blueprint; then
+    echo "[Entrypoint] Blueprint applied."
+  elif [ "$OMEKA_BLUEPRINT_ON_ERROR" = "warn" ]; then
+    echo "[Entrypoint] WARNING: Blueprint not applied. Continuing startup (OMEKA_BLUEPRINT_ON_ERROR=warn)." >&2
+  else
+    echo "[Entrypoint] ERROR: Blueprint not applied. Stopping startup (OMEKA_BLUEPRINT_ON_ERROR=abort)." >&2
+    exit 1
+  fi
+fi
+
 # Run the original Docker PHP entrypoint (ref. file https://github.com/docker-library/php/blob/master/8.2/bookworm/apache/docker-php-entrypoint)
 # first argument is `-f` or another option
 if [ "${1#-}" != "$1" ]; then
