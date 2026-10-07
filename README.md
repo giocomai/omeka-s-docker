@@ -127,7 +127,7 @@ If a module is already present in the `modules` directory, the download will sti
 
 A blueprint is a declarative JSON file describing an Omeka S environment: modules, themes, settings, users and more. Its format is the shared, implementation-independent [Omeka S Blueprints](https://github.com/omeka-s-contrib/omeka-s-blueprints) specification ([documentation](https://omeka-s-contrib.github.io/omeka-s-blueprints/)), also used by [Omeka S Playground](https://github.com/ateeducacion/omeka-s-playground): a blueprint that only uses sections supported by both works in either.
 
-Set `OMEKA_BLUEPRINT` to apply a blueprint at container startup. It accepts a path inside the container or a URL (including GitHub `blob` URLs and `gh:owner/repo@ref:path`). The blueprint is processed by [Omeka-S-Cli](https://github.com/GhentCDH/Omeka-S-Cli) v0.17.1, bundled in the image as `omeka-s-cli`, not by custom container code.
+Set `OMEKA_BLUEPRINT` to apply a blueprint at container startup. It accepts a path inside the container or a URL (including GitHub `blob` URLs and `gh:owner/repo@ref:path`). The blueprint is processed by [Omeka-S-Cli](https://github.com/GhentCDH/Omeka-S-Cli) v0.18.0, bundled in the image as `omeka-s-cli`, not by custom container code.
 
 ### Example
 
@@ -171,13 +171,13 @@ Any other value stops the container.
 
 ### Supported sections
 
-Omeka-S-Cli validates the whole blueprint against the schema, but v0.17.1 applies only part of it:
+Omeka-S-Cli validates the whole blueprint against the schema, but v0.18.0 applies only part of it:
 
 | Section | Applied by this image |
 |---|---|
-| `modules`, `themes`, `files`, `vocabularies`, `resourceTemplates`, `users`, `settings` | Yes |
+| `modules`, `themes`, `files`, `vocabularies`, `resourceTemplates`, `users`, `settings`, `sites` | Yes |
 | `install` | No, the image installs Omeka S itself (see above) |
-| `sites`, `items`, `itemSets` | No, not applied by Omeka-S-Cli yet |
+| `items`, `itemSets` | No, not applied by Omeka-S-Cli yet |
 | `meta`, `preferredVersions`, `x-*` extensions | Ignored |
 
 ### Secrets

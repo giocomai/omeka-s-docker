@@ -64,8 +64,8 @@ RUN install-php-extensions \
 
 # Install Omeka-S-Cli, used to apply OMEKA_BLUEPRINT at startup (https://github.com/GhentCDH/Omeka-S-Cli)
 # The checksum is the SHA-256 of the release's omeka-s-cli.phar: update both together
-ARG OMEKA_CLI_VERSION=0.17.1
-ARG OMEKA_CLI_SHA256=dbca2b9200b2247d6f7fdf02c7125b847c17b03dd912d8fb52e33313eb69a80a
+ARG OMEKA_CLI_VERSION=0.18.0
+ARG OMEKA_CLI_SHA256=439b99e0e4122fd927a2143ce810e0e68b393f73a660188118b7392574302b34
 # hadolint ignore=DL4006
 RUN wget --no-verbose "https://github.com/GhentCDH/Omeka-S-Cli/releases/download/v${OMEKA_CLI_VERSION}/omeka-s-cli.phar" -O /usr/local/bin/omeka-s-cli \
 &&  echo "${OMEKA_CLI_SHA256}  /usr/local/bin/omeka-s-cli" | sha256sum -c - \
