@@ -1,0 +1,16 @@
+{
+  "$schema": "https://omeka-s-contrib.github.io/omeka-s-blueprints/schema/v0/blueprint-schema.json",
+  "meta": {
+    "title": "omeka-s-docker example",
+    "description": "Activates a module and sets a global setting on top of the container install."
+  },
+  "modules": [
+    {
+      "name": "Common",
+      "state": "activate"
+    }
+  ],
+  "settings": {
+    "installation_title": "Omeka S Blueprint Site"
+  }
+}

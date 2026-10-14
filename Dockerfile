@@ -59,7 +59,17 @@ RUN install-php-extensions \
     mysqli \
     imagick \
     intl \
-    xsl
+    xsl \
+    zip
+
+# Install Omeka-S-Cli, used to apply OMEKA_BLUEPRINT at startup (https://github.com/GhentCDH/Omeka-S-Cli)
+# The checksum is the SHA-256 of the release's omeka-s-cli.phar: update both together
+ARG OMEKA_CLI_VERSION=0.18.2
+ARG OMEKA_CLI_SHA256=6f78582deed845071fd116fb985edb54f7bd7c40f8baa56d5ba9a61058cc0c00
+# hadolint ignore=DL4006
+RUN wget --no-verbose "https://github.com/GhentCDH/Omeka-S-Cli/releases/download/v${OMEKA_CLI_VERSION}/omeka-s-cli.phar" -O /usr/local/bin/omeka-s-cli \
+&&  echo "${OMEKA_CLI_SHA256}  /usr/local/bin/omeka-s-cli" | sha256sum -c - \
+&&  chmod 0755 /usr/local/bin/omeka-s-cli
 
 # Add the Omeka-S PHP code
 # Latest Omeka version, check: https://omeka.org/s/download/
