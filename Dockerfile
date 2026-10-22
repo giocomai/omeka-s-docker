@@ -1,4 +1,4 @@
-FROM php:8.5-apache-trixie
+FROM php:8.5.12-apache-trixie
 
 # Omeka-S web publishing platform for digital heritage collections (https://omeka.org/s/)
 # Previous maintainers: Oldrich Vykydal (o1da) - Klokan Technologies GmbH  / Eric Dodemont <eric.dodemont@skynet.be>
